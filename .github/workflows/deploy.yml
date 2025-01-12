@@ -1,0 +1,44 @@
+# Name of your workflow that will appear in GitHub Actions tab
+name: Deploy to GitHub Pages
+
+# Define when this workflow will run
+on:
+  # Trigger the workflow on push events to main branch
+  push:
+    branches:
+      - main  # Change this if your default branch has a different name
+
+# Required permissions for GitHub Pages deployment
+permissions:
+  contents: write  # Allows the action to push to gh-pages branch
+
+# Define the jobs to run
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use Ubuntu as the operating system for the job
+    steps:
+      # Step 1: Check out your repository
+      - name: Checkout
+        uses: actions/checkout@v3  # This action checks-out your repository
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Specify Node.js version
+          cache: 'npm'  # Cache npm dependencies
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: npm ci  # Clean install of dependencies
+
+      # Step 4: Build the project
+      - name: Build
+        run: npm run build  # Runs the build script from your package.json
+
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist  # The folder the action will deploy
+          branch: gh-pages  # The branch the action will deploy to
